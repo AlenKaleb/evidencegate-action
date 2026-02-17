@@ -1,0 +1,17 @@
+name: 'Evidence Gate'
+description: 'A GitHub Action for compliance gating with SBOM and provenance verification'
+author: 'AlenKaleb'
+branding:
+  icon: 'shield'
+  color: 'blue'
+inputs:
+  config-path:
+    description: 'Path to the compliance gate configuration file'
+    required: false
+    default: '.compliance-gate.yml'
+outputs:
+  result:
+    description: 'Compliance check result (pass/warn/fail)'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

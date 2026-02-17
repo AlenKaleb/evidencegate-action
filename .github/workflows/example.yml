@@ -1,0 +1,28 @@
+name: Example Compliance Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  compliance:
+    name: Evidence Gate Compliance Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Evidence Gate
+        uses: ./
+        # For published action, use:
+        # uses: AlenKaleb/evidence-gate@v1
+        with:
+          config-path: '.compliance-gate.yml'
+      
+      - name: Display result
+        if: always()
+        run: echo "Compliance check completed"
