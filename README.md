@@ -9,9 +9,8 @@ A GitHub Action for **compliance gating** with SBOM (Software Bill of Materials)
 
 - **SBOM Validation** — Verify the presence and format of SBOM files (CycloneDX and SPDX supported)
 - **Provenance Checks** — Validate provenance attestations for your builds
-- **Flexible Modes** — Choose between `warn` and `fail` to match your adoption stage
+- **Flexible Modes** — Choose between `warn`, `fail`, or `enforce` to match your adoption stage
 - **GitHub Integration** — Native check annotations, job summaries, and PR comments
-- **Evidence Pack** — Generate an HTML report with all compliance evidence
 
 ## Quick Start
 
@@ -20,21 +19,12 @@ A GitHub Action for **compliance gating** with SBOM (Software Bill of Materials)
 Create `.compliance-gate.yml` in the root of your repository:
 
 ```yaml
-mode: warn                # warn | fail
-sbom:
-  paths:
-    - "out/sbom.cdx.json"
-    - "out/sbom.spdx.json"
-provenance:
-  require: false
-  path: "out/provenance.json"
-ux:
-  pr_comment: true
-  annotations: true
-  max_annotations: 20
-evidence_pack:
-  enabled: true
-  output_path: "out/evidence-pack.html"
+mode: warn
+require_sbom: true
+require_provenance: false
+sbom_paths:
+  - sbom.cdx.json
+  - sbom.spdx.json
 ```
 
 ### 2. Add the action to your workflow
@@ -75,72 +65,42 @@ jobs:
 
 The `.compliance-gate.yml` file supports the following options:
 
-### `mode`
+| Option | Description | Default |
+|--------|-------------|----------|
+| `mode` | Action mode: `warn`, `fail`, or `enforce` | `warn` |
+| `require_sbom` | Whether to require SBOM files | `true` |
+| `require_provenance` | Whether to require provenance attestations | `false` |
+| `sbom_paths` | Paths to search for SBOM files | `["sbom.cdx.json", "sbom.spdx.json"]` |
 
-| Value | Behavior |
-|-------|----------|
+### Modes
+
+| Mode | Behavior |
+|------|----------|
 | `warn` | Log warnings but **do not** fail the workflow. Ideal for gradual adoption. |
 | `fail` | Fail the workflow if compliance checks do not pass. |
-
-### `sbom`
-
-| Option | Description | Default |
-|--------|-------------|----------|
-| `sbom.paths` | Paths to search for SBOM files (CycloneDX / SPDX) | `["out/sbom.cdx.json", "out/sbom.spdx.json"]` |
-
-### `provenance`
-
-| Option | Description | Default |
-|--------|-------------|----------|
-| `provenance.require` | Whether to require provenance attestations | `false` |
-| `provenance.path` | Path to the provenance attestation file | `"out/provenance.json"` |
-
-### `ux`
-
-| Option | Description | Default |
-|--------|-------------|----------|
-| `ux.pr_comment` | Post a compliance summary as a PR comment | `true` |
-| `ux.annotations` | Add inline annotations to changed files | `true` |
-| `ux.max_annotations` | Maximum number of annotations per run | `20` |
-
-### `evidence_pack`
-
-| Option | Description | Default |
-|--------|-------------|----------|
-| `evidence_pack.enabled` | Generate an HTML evidence pack report | `true` |
-| `evidence_pack.output_path` | Output path for the evidence pack | `"out/evidence-pack.html"` |
+| `enforce` | Strictly enforce all compliance rules. |
 
 ## Examples
 
 ### Strict enforcement
 
 ```yaml
-mode: fail
-sbom:
-  paths:
-    - "out/sbom.cdx.json"
-provenance:
-  require: true
-  path: "out/provenance.json"
-ux:
-  pr_comment: true
-  annotations: true
-  max_annotations: 20
-evidence_pack:
-  enabled: true
-  output_path: "out/evidence-pack.html"
+mode: enforce
+require_sbom: true
+require_provenance: true
+sbom_paths:
+  - sbom.cdx.json
 ```
 
 ### Warn-only (gradual adoption)
 
 ```yaml
 mode: warn
-sbom:
-  paths:
-    - "out/sbom.cdx.json"
-    - "out/sbom.spdx.json"
-provenance:
-  require: false
+require_sbom: true
+require_provenance: false
+sbom_paths:
+  - sbom.cdx.json
+  - sbom.spdx.json
 ```
 
 ### Using the output

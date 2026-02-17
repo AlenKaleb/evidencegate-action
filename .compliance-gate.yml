@@ -1,27 +1,16 @@
 # Evidence Gate Configuration
 # This file controls how the Evidence Gate action behaves in your workflow
 
-# Action mode: warn | fail
+# Action mode: warn | fail | enforce
 mode: warn
 
-# SBOM configuration
-sbom:
-  paths:
-    - "out/sbom.cdx.json"
-    - "out/sbom.spdx.json"
+# Whether to require SBOM files (default: true)
+require_sbom: true
 
-# Provenance configuration
-provenance:
-  require: false
-  path: "out/provenance.json"
+# Whether to require provenance attestations (default: false)
+require_provenance: false
 
-# UX options
-ux:
-  pr_comment: true
-  annotations: true
-  max_annotations: 20
-
-# Evidence pack output
-evidence_pack:
-  enabled: true
-  output_path: "out/evidence-pack.html"
+# Paths to search for SBOM files
+sbom_paths:
+  - sbom.cdx.json
+  - sbom.spdx.json
